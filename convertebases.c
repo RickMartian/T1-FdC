@@ -14,8 +14,14 @@ void decToAll();
 void decToBin(int dec, char bin[]);
 void decToOctal(int dec, char octal[]);
 void decToHexa(int dec, char hexa[]);
+void binToAll();
+int verificaBin(char bin[]);
+int binToDec(char bin[]);
+void binToOctal(char bin[], char octal[]);
+void binToHexa(char bin[], char hexa[]);
 
 int main() {
+	system("mode con:cols=80 lines=30");
 	menu();
 }
 
@@ -58,8 +64,8 @@ void menu() {
                 	decToAll();
                     break; 
                 case 2:
-                    
-                    printf("funcao binToAll");
+                    system("cls");
+                    binToAll();
                     break;
                 case 3:
                     
@@ -105,6 +111,8 @@ void decToAll() {
 	decToBin(dec, bin);
 	decToOctal(dec, octal);
 	decToHexa(dec, hexa);
+	system("cls");
+	gotoxy(20,5); 
 	printf("\n\t\tDecimal: %d\n", dec);
 	printf("\n\t\tBinario: %s\n", bin);
 	printf("\n\t\tOctal: %s\n", octal);
@@ -114,8 +122,9 @@ void decToAll() {
 	system("cls");
 	gotoxy(20,5); printf("Deseja fazer com outro numero?");
 	printf("\n\t\tEnter - Sim\t\t\tEspaco - Voltar ao menu\n\t\tEsc - Sair");
-	tecla = getch();
+	
 	do{
+		tecla = getch();
 		if(tecla == 13){
 			system("cls");
 			decToAll();
@@ -189,9 +198,154 @@ void decToHexa(int dec, char hexa[]) {
 	strrev(hexa);
 }
 
+void binToAll(){
+	int tecla, valido, dec;
+	char bin[30], octal[30], hexa[30];
+	gotoxy(20,5); printf("BINARIO PARA TODAS AS BASES");
+	do{
+		printf("\n\t\tDigite um numero em binario: ");
+		scanf("%s", &bin);
+		valido = verificaBin(bin);
+	} while (strlen(bin) > 30 || valido == 0);
+	dec = binToDec(bin);
+	binToOctal(bin, octal);
+	binToHexa(bin, hexa);
+	system("cls");
+	gotoxy(20,5);
+	printf("\n\t\tBinario: %s\n", bin);
+	printf("\n\t\tDecimal: %d\n", dec);
+	printf("\n\t\tOctal: %s\n", octal);
+	printf("\n\t\tHexadecimal: %s\n", hexa);
+	printf("\n\t\tPressione alguma tecla para continuar..");
+	getch();
+	system("cls");
+	gotoxy(20,5); printf("Deseja fazer com outro numero?");
+	printf("\n\t\tEnter - Sim\t\t\tEspaco - Voltar ao menu\n\t\tEsc - Sair");
+	
+	do{
+		tecla = getch();
+		if(tecla == 13){
+			system("cls");
+			binToAll();
+		}
+		else if(tecla == 32)
+			menu();
+		else if(tecla == 27)
+			sair();
+	} while(tecla != 27 && tecla != 13 && tecla != 32);	
+}
+
+int verificaBin(char bin[]){
+	int i;
+	for(i = 0; i < strlen(bin); i++){
+		if(bin[i] != '1' && bin[i] != '0'){
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int binToDec(char bin[]){
+	int dec = 0, mult2 = 1, i;
+	for(i = strlen(bin)-1; i >= 0; i--){
+		if(i == strlen(bin)-1){
+			if(bin[i] == '1')
+				dec = 1;
+			else
+				dec = 0;
+		}
+		else if(bin[i] == '1'){
+			mult2 *= 2;
+			dec += mult2;
+		}
+		else
+			mult2 *= 2;
+	}
+	return dec;
+}
+
+void binToOctal(char bin1[], char octal[]){
+	char aux[4], bin[30];
+	int  i, part, x = 2;
+	
+	strcpy(bin, bin1);
+	
+	strrev(bin);
+	
+	while(strlen(bin) % 3 != 0){
+		strcat(bin,"0");	
+	}
+	strrev(bin);
+	
+	for(i = 0; i < strlen(bin); i++){
+		if((i+1) % 3 == 0){
+			aux[x-2] = bin[i-2];
+			aux[x-1] = bin[i-1];
+			aux[x] = bin[i];
+			x = 2;
+			part = binToDec(aux);
+			
+			switch(part){
+				case 0: strcat(octal, "0"); break;
+				case 1: strcat(octal, "1"); break;
+				case 2: strcat(octal, "2");	break;
+				case 3: strcat(octal, "3");	break;
+				case 4: strcat(octal, "4");	break;
+				case 5: strcat(octal, "5");	break;
+				case 6: strcat(octal, "6");	break;
+				case 7: strcat(octal, "7");	break;
+			}		
+		}
+	}	
+}
+
+void binToHexa(char bin1[], char hexa[]){
+	char aux[5], bin[30];
+	int  i, part, x = 3;
+	
+	strcpy(bin, bin1);
+	
+	strrev(bin);
+	
+	while(strlen(bin) % 4 != 0){
+		strcat(bin,"0");	
+	}
+	strrev(bin);
+	
+	for(i = 0; i < strlen(bin); i++){
+		if((i+1) % 4 == 0){
+			aux[x-3] = bin[i-3];
+			aux[x-2] = bin[i-2];
+			aux[x-1] = bin[i-1];
+			aux[x] = bin[i];
+			x = 3;
+			part = binToDec(aux);
+			
+			switch(part){
+				case 0: strcat(hexa,"0"); break; 
+				case 1: strcat(hexa,"1"); break;
+				case 2: strcat(hexa,"2"); break;
+				case 3: strcat(hexa,"3"); break;
+				case 4: strcat(hexa,"4"); break;
+				case 5: strcat(hexa,"5"); break;
+				case 6: strcat(hexa,"6"); break;
+				case 7: strcat(hexa,"7"); break;
+				case 8: strcat(hexa,"8"); break; 
+				case 9: strcat(hexa,"9"); break;
+				case 10: strcat(hexa,"A"); break;
+				case 11: strcat(hexa,"B"); break;
+				case 12: strcat(hexa,"C"); break;
+				case 13: strcat(hexa,"D"); break;
+				case 14: strcat(hexa,"E"); break;
+				case 15: strcat(hexa,"F"); break;
+			}		
+		}
+	}	
+}
+
 void sobre() {
 	int tecla;
-	printf("\n\n\t\tPrograma desenvolvido por Henrique Marciano da Silva, 2 termo - BSI 2018, \n\t\tpara a disciplina Fundamentos da Computacao como 1%c trabalho.", 167);
+	printf("\n\n\t\tPrograma desenvolvido por Henrique Marciano da Silva, \n\t\t2 termo - BSI 2018, para a disciplina Fundamentos da \n\t\tComputacao como 1%c trabalho.", 167);
 	printf("\n\n\t\tEsc - Voltar ao menu");
 	tecla = getch();
 	do{
@@ -204,7 +358,7 @@ void sobre() {
 
 void ajuda() {
 	int tecla;
-	printf("\n\n\t\tUtilize as setas do teclado para alternar entre as opcoes do menu\n\t\t e o enter para entrar na opcao escolhida.");
+	printf("\n\n\t\tUtilize as setas do teclado para alternar \n\t\tentre as opcoes do menu e o enter para \n\t\tentrar na opcao escolhida.");
 	printf("\n\n\t\tEsc - Voltar ao menu");
 	tecla = getch();
 	do{
