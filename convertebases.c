@@ -19,6 +19,11 @@ int verificaBin(char bin[]);
 int binToDec(char bin[]);
 void binToOctal(char bin[], char octal[]);
 void binToHexa(char bin[], char hexa[]);
+void octalToAll();
+int verificaOctal(char octal[]);
+void octalBase(char octal, int *mult8, int *dec);
+void octalToBin(char octal[], char bin[]);
+void octalToHexa(char bin[], char hexa[]);
 
 int main() {
 	system("mode con:cols=80 lines=30");
@@ -68,8 +73,8 @@ void menu() {
                     binToAll();
                     break;
                 case 3:
-                    
-                    printf("funcao OctalToAll");
+                    system("cls");
+                    octalToAll();
                     break;
                 case 4:
                     
@@ -101,7 +106,7 @@ void menu() {
 void decToAll() {
 	int dec, tecla;
 	char bin[30], octal[30], hexa[30];
-	gotoxy(20,5); printf("DECIMAL PARA TODAS AS BASES");
+	gotoxy(20,5); printf("DECIMAL PARA TODAS AS BASES\n");
 	do{
 		printf("\n\t\tDigite um numero positivo em decimal: ");
 		scanf("%d", &dec);
@@ -139,6 +144,10 @@ void decToAll() {
 void decToBin(int dec, char bin[]) {
 	int mod;
 	strcpy (bin,"");
+	
+	if(dec == 0)
+		strcpy(bin, "000");
+		
 	while(dec != 0){
 		mod = dec % 2;
 		dec /= 2;
@@ -153,6 +162,10 @@ void decToBin(int dec, char bin[]) {
 void decToOctal(int dec, char octal[]) {
 	int mod;
 	strcpy (octal,"");
+	
+	if(dec == 0)
+		strcpy(octal, "0");
+		
 	while(dec != 0){
 		mod = dec % 8;
 		dec /= 8;
@@ -173,6 +186,10 @@ void decToOctal(int dec, char octal[]) {
 void decToHexa(int dec, char hexa[]) {
 	int mod;
 	strcpy (hexa,"");
+	
+	if(dec == 0)
+		strcpy(hexa, "0");
+		
 	while(dec != 0){
 		mod = dec % 16;
 		dec /= 16;
@@ -201,7 +218,7 @@ void decToHexa(int dec, char hexa[]) {
 void binToAll(){
 	int tecla, valido, dec;
 	char bin[30], octal[30], hexa[30];
-	gotoxy(20,5); printf("BINARIO PARA TODAS AS BASES");
+	gotoxy(20,5); printf("BINARIO PARA TODAS AS BASES\n");
 	do{
 		printf("\n\t\tDigite um numero em binario: ");
 		scanf("%s", &bin);
@@ -312,12 +329,22 @@ void binToHexa(char bin1[], char hexa[]){
 	}
 	strrev(bin);
 	
+	printf("\nbin == %s\n", bin);
+	system("pause");
+
 	for(i = 0; i < strlen(bin); i++){
 		if((i+1) % 4 == 0){
 			aux[x-3] = bin[i-3];
 			aux[x-2] = bin[i-2];
 			aux[x-1] = bin[i-1];
 			aux[x] = bin[i];
+			
+			printf("\naux == %s\n", aux);
+			system("pause");
+			
+			if(stricmp(aux, "0000") == 0 && i == 3)
+				continue;
+				
 			x = 3;
 			part = binToDec(aux);
 			
@@ -341,6 +368,171 @@ void binToHexa(char bin1[], char hexa[]){
 			}		
 		}
 	}	
+}
+
+void octalToAll(){
+	int tecla, valido, dec;
+	char bin[30], octal[30], hexa[30];
+	gotoxy(20,5); printf("OCTAL PARA TODAS AS BASES\n");
+	do{
+		printf("\n\t\tDigite um numero em octal: ");
+		scanf("%s", &octal);
+		valido = verificaOctal(octal);
+	} while (strlen(octal) > 30 || valido == 0);
+	dec = octalToDec(octal);
+	octalToBin(octal, bin);
+	octalToHexa(bin, hexa);
+	
+	system("cls");
+	gotoxy(20,5);
+	printf("\n\t\tOctal: %s\n", octal);
+	printf("\n\t\tDecimal: %d\n", dec);
+	printf("\n\t\tBinario: %s\n", bin);
+	printf("\n\t\tHexadecimal: %s\n", hexa);
+	printf("\n\t\tPressione alguma tecla para continuar..");
+	getch();
+	
+	system("cls");
+	gotoxy(20,5); printf("Deseja fazer com outro numero?");
+	printf("\n\t\tEnter - Sim\t\t\tEspaco - Voltar ao menu\n\t\tEsc - Sair");
+	
+	do{
+		tecla = getch();
+		if(tecla == 13){
+			system("cls");
+			octalToAll();
+		}
+		else if(tecla == 32)
+			menu();
+		else if(tecla == 27)
+			sair();
+	} while(tecla != 27 && tecla != 13 && tecla != 32);	
+}
+
+int verificaOctal(char octal[]){
+	int i;
+	
+	for(i = 0; i < strlen(octal); i++){
+		if(octal[i] < 48 || octal[i] > 55){
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int octalToDec(char octal[]){
+	int dec = 0, mult8 = 1, i;
+	for(i = strlen(octal)-1; i >= 0; i--){
+		if(i == strlen(octal)-1){
+			octalBase(octal[i], &mult8, &dec);
+			dec = dec/8;
+			mult8 = 1;
+		}
+		else
+			octalBase(octal[i], &mult8, &dec);
+	}
+	return dec;
+}
+
+void octalBase(char octal, int *mult8, int *dec){
+	switch(octal){
+		case '0': *mult8 *= 8; break;
+		case '1':  *dec += (*mult8 *= 8); break;
+		case '2':  *dec += (2*((*mult8)*= 8)); break;
+		case '3':  *dec += (3*((*mult8)*= 8)); break;
+		case '4':  *dec += (4*((*mult8)*= 8)); break;
+		case '5':  *dec += (5*((*mult8)*= 8)); break;
+		case '6':  *dec += (6*((*mult8)*= 8)); break;
+		case '7':  *dec += (7*((*mult8)*= 8)); break;
+	}
+}
+
+void octalToBin(char octal[], char bin[]){
+	int i;
+	char aux[4];
+	strcpy(bin, "");
+	for(i = 0; i < strlen(octal); i++){
+		
+		switch(octal[i]){
+			case '0': 	decToBin(0, aux);
+						strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      	
+			case '1': 	decToBin(1, aux);
+						strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      	
+			case '2': 	decToBin(2, aux);
+						strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      	
+			case '3': 	decToBin(3, aux);
+						strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      	
+			case '4': 	decToBin(4, aux);
+						strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      	
+			case '5': 	decToBin(5, aux);
+						strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      	
+			case '6': 	decToBin(6, aux);
+			    		strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      	
+			case '7': 	decToBin(7, aux);
+						strrev(aux);
+					  	while(strlen(aux) % 3 != 0)
+				      		strcat(aux, "0");
+				      	strrev(aux);
+				      	strcat(bin, aux);
+				      	strcpy(aux, "");
+				      	break;
+				      		      		      		      		      		      		      	
+		}	
+	}
+}
+
+void octalToHexa(char bin[], char hexa[]){
+	
+	binToHexa(bin, hexa);	
 }
 
 void sobre() {
