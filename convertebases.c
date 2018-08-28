@@ -38,12 +38,12 @@ int main() {
 
 void menu() {
     int opc = 1, //para selecionar as opcoes
-    continua = 1,//continua == 1 para manter o loop
-    x = 7;  //marco inicial de posicao do icone.
+    x = 7,  //marco inicial de posicao do icone.
+    tecla;
     system("cls");
     gotoxy(20,5); printf("MENU - CONVERSAO DE BASES"); //posiciona o MENU
     gotoxy(18,7); printf("%c", 254); //posiciona o icone na primeira opcao do menu.
-    while(continua){
+    while(tecla != 27){
         gotoxy(20,7); printf("Decimal para todas as bases");
         gotoxy(20,9); printf("Binario para todas as bases");
         gotoxy(20,11); printf("Octal para todas as bases");
@@ -52,23 +52,23 @@ void menu() {
         gotoxy(38,17); printf("F2 - Sobre");
         gotoxy(20,19); printf("Esc - Sair");
 
-        system("pause>nul"); //pausa o programa até pegar um input, >nul nao retorna output, daí nao sai Pressione...
+        tecla = getch();
 
-        if(GetAsyncKeyState(VK_DOWN) && x != 13){ // x != da posicao maxima, para nao fz uma posicao abaixo da ultima.
+        if(tecla == 80 && x != 13){ // x != da posicao maxima, para nao fz uma posicao abaixo da ultima.
             gotoxy(18,x); printf("  "); //vai para p posicao (18,7) e coloca espaco vazio;
             x += 2;                        //soma 2 no x;
             gotoxy(18,x); printf("%c",254); // vai para a posicao (18,8), a primeira de baixo, e printa o icone;
             opc++;                       // soma 1 em opc;
             continue; //nao fazer mais nada, e ir pro proximo bloco
         }
-         if(GetAsyncKeyState(VK_UP) && x != 7){ //x != da posicao minima, para nao fz uma posicao acima da primeira.
+         if(tecla == 72 && x != 7){ //x != da posicao minima, para nao fz uma posicao acima da primeira.
             gotoxy(18,x); printf("  ");
             x -= 2;
             gotoxy(18,x); printf("%c",254);
             opc--;
             continue; //nao fazer mais nada, e ir pro proximo bloco
         }
-        if(GetAsyncKeyState(VK_RETURN)){
+        if(tecla == 13){
             switch(opc){
                 case 1:
                 	system("cls");
@@ -101,11 +101,10 @@ void menu() {
             
         }
         
-        if(GetAsyncKeyState(VK_ESCAPE)){
-            system("cls");
-            sair();
-           	exit(0);
-        }
+    }
+    
+    if(tecla == 27){
+    	sair();
     }
 }
 
@@ -792,32 +791,34 @@ void hexaToOctal(char bin[], char octal[]){
 void sobre() {
 	int tecla;
 	printf("\n\n\t\tPrograma desenvolvido por Henrique Marciano da Silva, \n\t\t2 termo - BSI 2018, para a disciplina Fundamentos da \n\t\tComputacao como 1%c trabalho.", 167);
-	printf("\n\n\t\tEsc - Voltar ao menu");
-	tecla = getch();
+	printf("\n\n\t\tEspaco - Voltar ao menu");
+	
 	do{
-		if(GetAsyncKeyState(VK_ESCAPE)){
+		tecla = getch();
+		if(tecla == 32){
 			menu();
 		}
-	} while (tecla != 27);
+	} while (tecla != 32);
 	
 }
 
 void ajuda() {
 	int tecla;
 	printf("\n\n\t\tUtilize as setas do teclado para alternar \n\t\tentre as opcoes do menu e o enter para \n\t\tentrar na opcao escolhida.");
-	printf("\n\n\t\tEsc - Voltar ao menu");
-	tecla = getch();
+	printf("\n\n\t\tEspaco - Voltar ao menu");
+	
 	do{
-		if(GetAsyncKeyState(VK_ESCAPE)){
+		tecla = getch();
+		if(tecla == 32){
 			menu();
 		}
-	} while (tecla != 27);
-	
+	} while (tecla != 32);
 }
 
 void sair() {
 	system("cls");
-	printf("\n\t\tObrigado por usar este programa!");
+	gotoxy(20,2);
+	printf("Obrigado por usar este programa!");
 	exit(0);
 }
 void gotoxy(int x, int y){
